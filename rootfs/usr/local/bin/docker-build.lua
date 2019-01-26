@@ -13,14 +13,12 @@ end
 
 local function arguments()
   local flags = {
-    -- FLB_DEBUG = "Yes",
     FLB_TLS = "Yes",
     FLB_SHARED_LIB = "No",
     FLB_EXAMPLES = "No",
-    -- FLB_POSIX_TLS = "Yes",
     FLB_HTTP_SERVER = "Yes",
     FLB_SQLDB = "Yes",
-    FLB_CORO_STACK_SIZE = "1048576",
+    FLB_CORO_STACK_SIZE = "100000",
     -- FLB_IN_HTTP = "Yes",
     -- FLB_OUT_RETRY = "Yes",
     FLB_OUT_KAFKA = "Yes",
@@ -55,7 +53,10 @@ local function clean(tmp)
 end
 
 local function update()
-  core.append_file("/etc/fluent-bit/fluent-bit.conf", "@include /usr/local/etc/fluent-bit/*.conf \n")
+  local etc = "/etc/fluent-bit"
+  local conf = "fluent-bit.conf"
+  core.run("mv %s/%s %s/default.%s", etc, conf, etc, conf)
+  core.run("mv %s/.%s %s/%s", etc, conf, etc, conf)
 end
 
 local function main()
