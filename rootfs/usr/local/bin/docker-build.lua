@@ -13,11 +13,14 @@ end
 
 local function arguments()
   local flags = {
+    -- FLB_DEBUG = "Yes",
     FLB_TLS = "Yes",
     FLB_SHARED_LIB = "No",
     FLB_EXAMPLES = "No",
+    -- FLB_POSIX_TLS = "Yes",
     FLB_HTTP_SERVER = "Yes",
     FLB_SQLDB = "Yes",
+    FLB_CORO_STACK_SIZE = "1048576",
     -- FLB_IN_HTTP = "Yes",
     -- FLB_OUT_RETRY = "Yes",
     FLB_OUT_KAFKA = "Yes",
@@ -59,7 +62,7 @@ local function main()
   local tmp = "/tmp/fluent-bit"
   -- core.run("apk add --no-cache lua-rex-pcre")
   core.run("apk add --no-cache libgcc libsasl")
-  core.run("mkdir -p /usr/local/etc/fluent-bit")
+  core.run("mkdir -p /var/log/fluent-bit /usr/local/etc/fluent-bit")
   prepare(tmp)
   make(tmp)
   clean(tmp)
