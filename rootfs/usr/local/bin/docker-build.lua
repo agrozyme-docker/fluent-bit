@@ -3,7 +3,7 @@ local core = require("docker-core")
 
 local function prepare(tmp)
   core.run(
-    "apk add --no-cache --virtual .build-dependencies build-base cmake linux-headers zlib-dev mbedtls-dev cyrus-sasl-dev fts-dev"
+    "apk add --no-cache --virtual .build-dependencies build-base cmake linux-headers zlib-dev mbedtls-dev cyrus-sasl-dev fts-dev lua-posix"
   )
   core.run("mkdir -p %s", tmp)
   core.run("wget -qO %s.tgz https://fluentbit.io/releases/1.0/fluent-bit-1.0.3.tar.gz", tmp)
@@ -46,17 +46,29 @@ local function make(tmp)
   core.run("cd /")
 end
 
-local function clean(tmp)
-  core.run("rm -rf /usr/include %s", tmp)
-  core.run("rm -f %s.tgz", tmp)
-  core.run("apk del .build-dependencies")
+local function combine_parsers(etc)
+  local glob = require("posix.glob").glob
+  local contents = {}
+  local index = 1
+
+  for _, file in pairs(glob(etc .. "/parsers*.conf")) do
+    contents[index] = core.read_file(file)
+    index = index + 1
+  end
+
+  core.write_file(etc .. "/parsers.conf", table.concat(contents, "\n"))
 end
 
-local function update()
+local function clean(tmp)
   local etc = "/etc/fluent-bit"
   local conf = "fluent-bit.conf"
+  combine_parsers(etc)
   core.run("mv %s/%s %s/default.%s", etc, conf, etc, conf)
   core.run("mv %s/.%s %s/%s", etc, conf, etc, conf)
+  core.run("rm -rf /usr/include %s", tmp)
+  core.run("rm -f %s.tgz", tmp)
+  core.run("rm -f %s/parsers_*.conf", etc)
+  core.run("apk del .build-dependencies")
 end
 
 local function main()
@@ -67,7 +79,6 @@ local function main()
   prepare(tmp)
   make(tmp)
   clean(tmp)
-  update()
 end
 
 main()
