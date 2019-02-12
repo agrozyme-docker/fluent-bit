@@ -1,4 +1,4 @@
-FROM agrozyme/alpine:3.8
+FROM agrozyme/alpine:3.9
 COPY rootfs /
 WORKDIR /tmp/fluent-bit/build
 RUN set +e -uxo pipefail && chmod +x /usr/local/bin/* && /usr/local/bin/docker-build.lua
