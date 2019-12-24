@@ -6,7 +6,7 @@ local function prepare(tmp)
     "apk add --no-cache --virtual .build-dependencies build-base cmake linux-headers zlib-dev mbedtls-dev cyrus-sasl-dev fts-dev lua-posix"
   )
   core.run("mkdir -p %s", tmp)
-  core.run("wget -qO %s.tgz https://fluentbit.io/releases/1.0/fluent-bit-1.0.3.tar.gz", tmp)
+  core.run("wget -qO %s.tgz https://fluentbit.io/releases/1.0/fluent-bit-1.3.5.tar.gz", tmp)
   core.run("tar --extract --gzip --file %s.tgz --strip-components=1 --directory %s", tmp, tmp)
   core.append_file(tmp .. "/lib/chunkio/include/chunkio/chunkio.h", "#include <sys/types.h> \n")
 end
